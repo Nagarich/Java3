@@ -16,6 +16,7 @@ public class Main {
         boxAppele1.putFruit(new Appele());
         boxAppele1.putFruit(new Appele());
         boxAppele1.putFruit(new Appele());
+        boxAppele1.putFruit(new Appele());
         System.out.println(boxAppele1.getWeight());
 
         Box boxAppele2 = new Box();
@@ -28,9 +29,13 @@ public class Main {
         Box boxOrange1 = new Box();
         boxOrange1.putFruit(new Orange());
         boxOrange1.putFruit(new Appele());
+        boxOrange1.putFruit(new Orange());
 
         System.out.println(boxOrange1.getWeight());
         System.out.println(boxOrange1.compare(boxAppele2));
+
+        boxAppele2.putFruitsFromBox(boxOrange1);
+        System.out.println(boxOrange1.getWeight());
 
     }
 
@@ -56,16 +61,28 @@ class Box <T extends Fruit> {
 
     public Box() { fruitsList = new ArrayList<>(); }
 
-    public <TT extends Fruit> void putFruit(TT someFruit){
+    private <TT extends Fruit> boolean compareBoxType(TT someFruit){
         if (fruitsList.isEmpty() || fruitsList.get(0).getClass().isInstance(someFruit))
-            fruitsList.add((T) someFruit);
+            return true;
         else
-            System.out.println("Нельзя смешаать фрукты");
+            return false;
+    }
+
+    public <TT extends Fruit> boolean putFruit(TT someFruit){
+        if (!compareBoxType(someFruit)) {
+            System.out.println("Нельзя смешивать фрукты!");
+            return false;
+        } else {
+            fruitsList.add((T) someFruit);
+            return true;
+        }
    }
 
-    public void putFruitsFromBox(Box<T> box){
-        for (T someFruit:box.getAllFruits()) putFruit(someFruit);
-        box.clearBox();
+    public <TT extends Fruit> void putFruitsFromBox(Box<TT> box){
+         for (TT someFruit:box.getAllFruits())
+             if (!putFruit(someFruit)) return;
+
+         box.clearBox();
     }
 
     public void clearBox(){
